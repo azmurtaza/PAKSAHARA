@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.image.*?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.paksahara.controller.SignupController"
+            prefWidth="1100" prefHeight="700"
+            style="-fx-background-color: #f0f2f5;">
+
+    <center>
+        <StackPane>
+            <VBox alignment="CENTER" spacing="30"
+                  style="-fx-background-color: white; -fx-padding: 50; -fx-background-radius: 10;
+                         -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);"
+                  maxWidth="500">
+
+                <!-- Centered Logo -->
+                <ImageView fitWidth="400" fitHeight="200" preserveRatio="true">
+                    <image>
+                        <Image url="@/images/PAKSAHARA_logo.png"/>
+                    </image>
+                </ImageView>
+
+                <Label text="Create Account"
+                       style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #1a237e;"/>
+
+                <GridPane hgap="10" vgap="15" maxWidth="400">
+                    <columnConstraints>
+                        <ColumnConstraints prefWidth="100"/>
+                        <ColumnConstraints prefWidth="300"/>
+                    </columnConstraints>
+
+                    <!-- Name Fields -->
+                    <Label text="First Name:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                    <TextField fx:id="firstNameField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                    <Label text="Last Name:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                    <TextField fx:id="lastNameField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                    <!-- Email -->
+                    <Label text="Email:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                    <TextField fx:id="emailField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                    <!-- Password -->
+                    <Label text="Password:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                    <PasswordField fx:id="passwordField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+                    <!-- Contact -->
+                    <Label text="Contact:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                    <TextField fx:id="contactField" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+                </GridPane>
+
+                <Button text="Sign Up" onAction="#handleSignup"
+                        style="-fx-background-color: #1a237e; -fx-text-fill: white;
+                               -fx-font-size: 16px; -fx-padding: 12; -fx-background-radius: 5;"
+                        prefWidth="400"/>
+
+                <Label fx:id="errorLabel" textFill="red" style="-fx-font-size: 14px;"/>
+
+                <HBox alignment="CENTER" spacing="5">
+                    <Label text="Already have an account?" style="-fx-text-fill: #666;"/>
+                    <Hyperlink text="Login" onAction="#handleLogin"
+                               style="-fx-text-fill: #1a237e; -fx-font-weight: bold;"/>
+                </HBox>
+            </VBox>
+        </StackPane>
+    </center>
+</BorderPane>
