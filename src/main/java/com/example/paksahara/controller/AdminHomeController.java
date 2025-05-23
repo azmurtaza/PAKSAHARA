@@ -175,7 +175,7 @@ public class AdminHomeController implements Initializable {
                             rs.getString("title"),
                             rs.getString("description"),
                             rs.getString("image_url"),
-                            rs.getTimestamp("date_added").toLocalDateTime(),
+                            //rs.getTimestamp("date_added").toLocalDateTime(),
                             rs.getDouble("price"),
                             rs.getInt("stock"),
                             rs.getInt("category_id"),

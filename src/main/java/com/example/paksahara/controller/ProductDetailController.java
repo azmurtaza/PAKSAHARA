@@ -62,8 +62,8 @@ public class ProductDetailController implements Initializable {
         titleLabel.setText(product.getTitle());
         descLabel.setText(product.getDescription());
         priceLabel.setText(String.format("$ %.2f", product.getPrice()));
-        dateLabel.setText(product.getDateAdded()
-                .format(DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm")));
+        //dateLabel.setText(product.getDateAdded()
+                //.format(DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm")));
 
         if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
             productImage.setImage(new Image(product.getImageUrl()));

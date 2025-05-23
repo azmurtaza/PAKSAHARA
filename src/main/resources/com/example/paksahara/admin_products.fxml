@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.paksahara.controller.ProductViewController"
+            fitToWidth="true"
+            style="-fx-background-color: transparent;">
+    <content>
+        <GridPane fx:id="grid"
+                  hgap="20" vgap="20"
+                  style="-fx-background-color: #f8f9fa;">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+        </GridPane>
+    </content>
+</ScrollPane>
+

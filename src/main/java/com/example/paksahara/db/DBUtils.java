@@ -180,6 +180,20 @@ public class DBUtils {
             return false;
         }
     }
+    public static List<String> fetchAllCategories() {
+        List<String> categories = new ArrayList<>();
+        String sql = "SELECT name FROM category ORDER BY name";
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                categories.add(rs.getString("name"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return categories;
+    }
 
     public static List<User> fetchAllUsers() {
         String sql = "SELECT user_id, first_name, last_name, email, role, image_url FROM users";
@@ -239,6 +253,20 @@ public class DBUtils {
         }
     }
 
+    public static int getCategoryId(String categoryName) throws SQLException {
+        String sql = "SELECT category_id FROM category WHERE name = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, categoryName);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("category_id");
+                }
+            }
+        }
+        throw new SQLException("Category not found: " + categoryName);
+    }
+
     public static void updateProduct(Product product) throws SQLException {
         String sql = "UPDATE product SET title = ?, price = ?, stock = ?, status = ? WHERE product_id = ?";
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -251,9 +279,28 @@ public class DBUtils {
         }
     }
 
+
+    public static void addProduct(Product p) throws SQLException {
+        String sql = "INSERT INTO product (title, description, image_url, date_added, price, stock, category_id, status)"
+                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, p.getTitle());
+            ps.setString(2, p.getDescription());
+            ps.setString(3, p.getImageUrl());
+            //ps.setTimestamp(4, Timestamp.valueOf(p.getDateAdded()));
+            ps.setDouble(5, p.getPrice());
+            ps.setInt(6, p.getStock());
+            ps.setInt(7, p.getCategoryId());
+            ps.setString(8, p.getStatus());
+            ps.executeUpdate();
+        }
+    }
+
     public static void deleteProduct(int productId) throws SQLException {
         String sql = "DELETE FROM product WHERE product_id = ?";
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, productId);
             ps.executeUpdate();
         }
@@ -276,7 +323,7 @@ public class DBUtils {
                         rs.getString("title"),
                         rs.getString("description"),
                         rs.getString("image_url"),
-                        rs.getTimestamp("date_added").toLocalDateTime(),
+                        //rs.getTimestamp("date_added").toLocalDateTime(),
                         rs.getDouble("price"),
                         rs.getInt("stock"),
                         rs.getInt("category_id"),
@@ -291,7 +338,7 @@ public class DBUtils {
     }
 
     public static Product fetchProductById(int id) {
-        String sql = "SELECT * FROM products WHERE id = ?";
+        String sql = "SELECT * FROM product WHERE product_id = ?";  // ✅ Correct table & column
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
@@ -302,7 +349,7 @@ public class DBUtils {
                         rs.getString("title"),
                         rs.getString("description"),
                         rs.getString("image_url"),
-                        rs.getTimestamp("date_added").toLocalDateTime(),
+                        //rs.getTimestamp("date_added").toLocalDateTime(),
                         rs.getDouble("price"),
                         rs.getInt("stock"),
                         rs.getInt("category_id"),
@@ -344,7 +391,7 @@ public class DBUtils {
                         rs.getString("title"),
                         rs.getString("description"),
                         rs.getString("image_url"),
-                        rs.getTimestamp("date_added").toLocalDateTime(),
+                        //rs.getTimestamp("date_added").toLocalDateTime(),
                         rs.getDouble("price"),
                         rs.getInt("stock"),
                         rs.getInt("category_id"),
@@ -377,6 +424,8 @@ public class DBUtils {
         }
         return m;
     }
+
+
 
     public static Map<String,Integer> fetchStockStatusCounts() {
         String sql = """
@@ -433,24 +482,26 @@ public class DBUtils {
           FROM order_items oi
           JOIN product p ON oi.product_id = p.product_id
          WHERE oi.order_id = ?
-        """;
+    """;
+
         Map<Product,Integer> map = new LinkedHashMap<>();
+
         try (Connection c = getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, orderId);
+
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Product p = new Product(
                             rs.getInt("product_id"),
                             rs.getString("title"),
-                            /* description */ "",
+                            "",                        // description (empty string for now)
                             rs.getString("image_url"),
-                            /* dateAdded */ null,
                             rs.getDouble("price"),
-                            /* stock */ 0,
-                            /* categoryId */ 0,
-                            /* categoryName */ "",
-                            /* status */ ""
+                            0,                         // stock (default 0)
+                            0,                         // categoryId (default 0)
+                            "",                        // categoryName (empty)
+                            ""                         // status (empty)
                     );
                     map.put(p, rs.getInt("quantity"));
                 }
@@ -460,6 +511,7 @@ public class DBUtils {
         }
         return map;
     }
+
 
     public static User fetchUserById(int userId) {
         String sql = "SELECT first_name, last_name, email, role, image_url FROM users WHERE user_id = ?";

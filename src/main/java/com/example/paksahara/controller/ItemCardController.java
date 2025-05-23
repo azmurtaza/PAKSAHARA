@@ -19,7 +19,7 @@ public class ItemCardController {
     public void setData(Product p) {
         titleLabel.setText(p.getTitle());
         categoryLabel.setText(p.getCategoryName());
-        dateLabel.setText(p.getDateAdded().toLocalDate().toString());
+        //dateLabel.setText(p.getDateAdded().toLocalDate().toString());
         statusLabel.setText(p.getStatus());
         if (p.getImageUrl() != null && !p.getImageUrl().isEmpty()) {
             cardImage.setImage(new Image(p.getImageUrl(), true));
