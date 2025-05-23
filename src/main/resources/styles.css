@@ -1,0 +1,1237 @@
+/* Global Styles */
+.button {
+    -fx-cursor: hand;
+}
+.main-title {
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1a1a1a;
+    -fx-padding: 0 0 10 0;
+}
+
+.subtitle {
+    -fx-font-size: 18px;
+    -fx-text-fill: #65676b;
+    -fx-padding: 0 0 10 0;
+}
+
+.separator {
+    -fx-padding: 10 0;
+}
+
+.separator .line {
+    -fx-border-color: #e4e6eb;
+    -fx-border-width: 1;
+}
+
+/* ===== Moderator Sidebar Buttons ===== */
+.sidebar-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ecf0f1;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-border-color: transparent;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 10 20;
+    -fx-alignment: center-left;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 3, 0.1, 0, 1);
+    -fx-transition: all 0.3s ease;
+}
+
+.sidebar-button:hover {
+    -fx-background-color: #34495e;
+    -fx-text-fill: #ffffff;
+}
+
+.sidebar-logout-button {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0.2, 0, 1);
+}
+
+.sidebar-logout-button:hover {
+    -fx-background-color: #c0392b;
+}
+.combo-box {
+    -fx-pref-width: 200px;
+}
+
+.combo-box .list-cell {
+    -fx-padding: 5px;
+}
+
+.combo-box .list-view {
+    -fx-background-color: white;
+    -fx-border-color: #cccccc;
+}
+
+.text-area {
+    -fx-pref-width: 200px;
+    -fx-pref-height: 100px;
+}
+
+.label {
+    -fx-font-size: 12px;
+}
+
+/* ... rest of the existing CSS ... */
+.button:hover {
+    -fx-opacity: 0.9;
+}
+.auction-container {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
+}
+
+.auction-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.auction-price {
+    -fx-font-size: 18px;
+    -fx-text-fill: #27ae60;
+    -fx-font-weight: bold;
+}
+
+.auction-description {
+    -fx-font-size: 14px;
+    -fx-text-fill: #7f8c8d;
+}
+
+.time-remaining {
+    -fx-font-size: 14px;
+    -fx-text-fill: #e74c3c;
+}
+
+.bidding-history {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 8;
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+}
+
+.history-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+    -fx-padding: 0 0 10 0;
+}
+
+.bid-entry {
+    -fx-padding: 8;
+    -fx-background-color: white;
+    -fx-background-radius: 5;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 0);
+}
+
+/* For active navigation button styling */
+.active {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-border-color: #2980b9;
+    -fx-border-width: 0 0 3px 0;
+}
+
+.bid-amount {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #27ae60;
+}
+
+.bid-button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 5;
+    -fx-font-size: 14px;
+}
+
+.bid-button:hover {
+    -fx-background-color: #2980b9;
+}
+/* Form Controls */
+.text-field, .password-field, .combo-box {
+    -fx-font-size: 14px;
+    -fx-background-color: white;
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+}
+
+.text-field:focused, .password-field:focused, .combo-box:focused {
+    -fx-border-color: #4CAF50;
+}
+
+/* Hyperlinks */
+.hyperlink {
+    -fx-border-color: transparent;
+}
+
+.hyperlink:hover {
+    -fx-underline: true;
+}
+
+/* Dashboard Layout */
+.dashboard-split-pane {
+    -fx-background-color: #f8f9fa;
+}
+
+.sidebar {
+    -fx-background-color: #2c3e50;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);
+}
+
+/* Navigation Buttons */
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 12 20;
+    -fx-alignment: CENTER_LEFT;
+    -fx-cursor: hand;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+}
+
+.nav-button:hover {
+    -fx-background-color: #34495e;
+    -fx-text-fill: white;
+}
+
+.nav-button.active {
+    -fx-background-color: #3498db;
+    -fx-font-weight: bold;
+}
+
+/* Logout Button */
+.logout-button {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.logout-button:hover {
+    -fx-background-color: #c0392b;
+}
+
+/* Content Area */
+.content-area {
+    -fx-background-color: #f8f9fa;
+    -fx-padding: 20;
+}
+
+/* Cards and Stats */
+.stat-card {
+    -fx-cursor: hand;
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
+}
+
+.stat-card:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);
+}
+
+.item-card {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
+    -fx-cursor: hand;
+}
+
+.item-card:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);
+    -fx-translate-y: -2;
+}
+
+/* Tables */
+.table-view {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
+}
+
+.table-view .column-header {
+    -fx-background-color: #f8f9fa;
+    -fx-font-weight: bold;
+}
+
+.table-row-cell {
+    -fx-border-color: #f0f2f5;
+    -fx-border-width: 0 0 1 0;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #e3f2fd;
+}
+
+/* Sidebar Button (Legacy) */
+.sidebar-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 12 20;
+    -fx-alignment: CENTER_LEFT;
+    -fx-cursor: hand;
+}
+
+.sidebar-button:hover {
+    -fx-background-color: #283593;
+    -fx-background-radius: 5;
+}
+
+.stat-card {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
+    -fx-min-width: 200;
+}
+
+.stat-title {
+    -fx-font-size: 16px;
+    -fx-text-fill: #666666;
+}
+
+.stat-value {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.stat-subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #95a5a6;
+}
+
+.chart-card {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
+    -fx-min-width: 400;
+    -fx-min-height: 300;
+}
+
+.chart-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.table-card {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
+}
+
+.section-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.search-field {
+    -fx-background-radius: 20;
+    -fx-padding: 5 15;
+    -fx-background-color: #f5f5f5;
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 20;
+}
+
+.delete-button {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-background-radius: 5;
+}
+
+.delete-button:hover {
+    -fx-background-color: #c0392b;
+}
+
+.table-view {
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header {
+    -fx-background-color: #f8f9fa;
+}
+
+.table-view .table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: #f0f0f0;
+    -fx-border-width: 0 0 1 0;
+}
+
+.table-view .table-row-cell:hover {
+    -fx-background-color: #f8f9fa;
+}
+
+/* Moderators page specific styles */
+.action-button {
+    -fx-padding: 5 10;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+}
+
+.add-button {
+    -fx-background-color: #2ecc71;
+    -fx-text-fill: white;
+}
+
+.add-button:hover {
+    -fx-background-color: #27ae60;
+}
+
+.remove-button {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+}
+
+.remove-button:hover {
+    -fx-background-color: #c0392b;
+}
+
+.search-field {
+    -fx-pref-width: 200px;
+    -fx-padding: 5 10;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+    -fx-border-color: #bdc3c7;
+}
+
+.search-field:focused {
+    -fx-border-color: #3498db;
+}
+
+.section-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+/* Navigation Panel */
+.sidebar {
+    -fx-background-color: #2c3e50;
+    -fx-padding: 20;
+    -fx-spacing: 15;
+}
+
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ecf0f1;
+    -fx-font-size: 14px;
+    -fx-padding: 10 20;
+    -fx-alignment: CENTER_LEFT;
+    -fx-cursor: hand;
+    -fx-background-radius: 5;
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.nav-button:hover {
+    -fx-background-color: #34495e;
+    -fx-text-fill: white;
+}
+
+.nav-button.active {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.logout-button {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.logout-button:hover {
+    -fx-background-color: #c0392b;
+}
+
+/* Content Area */
+.content-area {
+    -fx-background-color: #f5f6fa;
+    -fx-padding: 20;
+}
+
+/* Dashboard Split Pane */
+.dashboard-split-pane {
+    -fx-background-color: #f8f9fa;
+}
+
+.dashboard-split-pane .split-pane-divider {
+    -fx-background-color: #e0e0e0;
+    -fx-padding: 0 1px 0 1px;
+}
+
+/* Section Titles */
+.section-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-fill: #2c3e50;
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* Action Buttons */
+.action-button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+}
+
+.action-button:hover {
+    -fx-background-color: #2980b9;
+}
+
+/* Search Field */
+.search-field {
+    -fx-background-color: white;
+    -fx-background-radius: 5;
+    -fx-padding: 10;
+    -fx-font-size: 14px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 1);
+}
+
+/* Table Styles */
+.table-view {
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header {
+    -fx-background-color: #2c3e50;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.table-view .table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: #f0f0f0;
+    -fx-border-width: 0 0 1 0;
+}
+
+.table-view .table-row-cell:hover {
+    -fx-background-color: #f8f9fa;
+}
+
+/* Cards */
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);
+    -fx-padding: 20;
+    -fx-spacing: 10;
+}
+
+.card-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-fill: #2c3e50;
+}
+
+/* Buttons */
+.action-button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 5;
+}
+
+.action-button:hover {
+    -fx-background-color: #2980b9;
+}
+
+/* Tables */
+.table-view {
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header {
+    -fx-background-color: #2c3e50;
+    -fx-text-fill: white;
+}
+
+.table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: #f0f0f0;
+    -fx-border-width: 0 0 1 0;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #f8f9fa;
+}
+
+/* Search Field */
+.search-field {
+    -fx-background-color: white;
+    -fx-background-radius: 5;
+    -fx-padding: 10;
+    -fx-font-size: 14px;
+}
+/* Stats Cards */
+.stat-card {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);
+    -fx-min-width: 200;
+    -fx-alignment: center;
+}
+
+.stat-number {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-fill: #2c3e50;
+}
+
+.stat-label {
+    -fx-font-size: 14px;
+    -fx-fill: #7f8c8d;
+}
+
+/* Auction Card */
+.auction-card {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-padding: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);
+    -fx-min-width: 300;
+    -fx-min-height: 400;
+}
+
+.auction-image {
+    -fx-background-radius: 5;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);
+}
+
+.auction-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-fill: #2c3e50;
+}
+
+.auction-price {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-fill: #27ae60;
+}
+
+.auction-time {
+    -fx-font-size: 14px;
+    -fx-fill: #e74c3c;
+}
+
+.bid-count {
+    -fx-font-size: 14px;
+    -fx-fill: #7f8c8d;
+}
+
+.view-bids-button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 5;
+}
+
+.view-bids-button:hover {
+    -fx-background-color: #2980b9;
+}
+
+/* Search Field */
+.search-field {
+    -fx-background-color: white;
+    -fx-background-radius: 5;
+    -fx-padding: 10;
+    -fx-font-size: 14px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 1);
+}
+/* Bids Dialog Styles */
+.dialog-pane {
+    -fx-background-color: white;
+}
+
+.dialog-pane .header-panel {
+    -fx-background-color: #2c3e50;
+}
+
+.dialog-pane .header-panel .label {
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+}
+
+.table-view {
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header {
+    -fx-background-color: #f8f9fa;
+    -fx-font-weight: bold;
+}
+
+.table-view .table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: #f0f0f0;
+    -fx-border-width: 0 0 1 0;
+}
+
+.table-view .table-row-cell:hover {
+    -fx-background-color: #f8f9fa;
+}
+
+.action-button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 15;
+    -fx-background-radius: 5;
+}
+
+.action-button:hover {
+    -fx-background-color: #2980b9;
+}
+
+/* Bid amount colors */
+.bid-amount {
+    -fx-fill: #27ae60;
+    -fx-font-weight: bold;
+}
+
+.bid-time {
+    -fx-fill: #7f8c8d;
+    -fx-font-style: italic;
+}
+/* Main Layout */
+.root {
+    -fx-background-color: #f0f2f5;
+}
+
+/* Add icons to buttons */
+#homeBtn {
+    -fx-graphic: url('home.png');
+}
+
+#setAuctionBtn {
+    -fx-graphic: url('auction.png');
+}
+
+#transactionsBtn {
+    -fx-graphic: url('transaction.png');
+}
+
+#donationsBtn {
+    -fx-graphic: url('donation.png');
+}
+
+#ongoingAuctionsBtn {
+    -fx-graphic: url('ongoing.png');
+}
+
+/* Content Area */
+.content-area {
+    -fx-background-color: #f0f2f5;
+    -fx-padding: 20;
+}
+
+/* Section Titles */
+.section-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-fill: #202124;
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* Section Titles */
+.section-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-fill: #2c3e50;
+}
+
+/* Stats Cards */
+.stat-card {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);
+    -fx-min-width: 200;
+    -fx-alignment: center;
+}
+
+.stat-number {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-fill: #2c3e50;
+}
+
+.stat-label {
+    -fx-font-size: 14px;
+    -fx-fill: #7f8c8d;
+}
+
+/* Auction Card */
+.auction-card {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-padding: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);
+    -fx-min-width: 300;
+    -fx-min-height: 400;
+}
+
+.auction-image {
+    -fx-background-radius: 5;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);
+}
+
+.auction-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-fill: #2c3e50;
+}
+
+.auction-price {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-fill: #27ae60;
+}
+
+.auction-time {
+    -fx-font-size: 14px;
+    -fx-fill: #e74c3c;
+}
+
+.bid-count {
+    -fx-font-size: 14px;
+    -fx-fill: #7f8c8d;
+}
+
+/* Buttons */
+.button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #2980b9;
+}
+
+.view-bids-button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 5;
+}
+
+.view-bids-button:hover {
+    -fx-background-color: #2980b9;
+}
+
+/* Search Field */
+.search-field {
+    -fx-background-color: white;
+    -fx-background-radius: 5;
+    -fx-padding: 10;
+    -fx-font-size: 14px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 1);
+}
+
+/* Table Styles */
+.table-view {
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header {
+    -fx-background-color: #f8f9fa;
+    -fx-font-weight: bold;
+}
+
+.table-view .table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: #f0f0f0;
+    -fx-border-width: 0 0 1 0;
+}
+
+.table-view .table-row-cell:hover {
+    -fx-background-color: #f8f9fa;
+}
+
+/* Dialog Styles */
+.dialog-pane {
+    -fx-background-color: white;
+}
+
+.dialog-pane .header-panel {
+    -fx-background-color: #2c3e50;
+}
+
+.dialog-pane .header-panel .label {
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+}
+
+/* Action Buttons */
+.action-button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 15;
+    -fx-background-radius: 5;
+
+}
+
+.action-button:hover {
+    -fx-background-color: #2980b9;
+}
+
+/* Bid amount colors */
+.bid-amount {
+    -fx-fill: #27ae60;
+    -fx-font-weight: bold;
+}
+
+.bid-time {
+    -fx-fill: #7f8c8d;
+    -fx-font-style: italic;
+}
+
+.content-area {
+    -fx-background-color: #f5f6fa;
+}
+
+.section-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.search-field {
+    -fx-background-color: white;
+    -fx-background-radius: 20;
+    -fx-padding: 8 15;
+    -fx-font-size: 14px;
+}
+
+.auction-card {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+}
+
+/* Unclaimed Items Styling */
+.unclaimed-items-scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+}
+
+.unclaimed-item-card {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
+    -fx-padding: 15;
+}
+
+.item-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.item-description {
+    -fx-font-size: 14px;
+    -fx-text-fill: #7f8c8d;
+}
+
+.set-auction-button {
+    -fx-background-color: #2ecc71;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 15;
+    -fx-background-radius: 5;
+}
+
+.set-auction-button:hover {
+    -fx-background-color: #27ae60;
+}
+
+/* Auction Updates Table Styling */
+.table-view {
+    -fx-background-color: transparent;
+    -fx-table-cell-border-color: transparent;
+}
+    .table-view .column-header {
+        -fx-background-color: #2c3e50;
+        -fx-text-fill: white;
+        -fx-font-weight: bold;
+    }
+
+    .table-view .column-header .label {
+        -fx-text-fill: white;
+    }
+
+    .table-row-cell {
+        -fx-background-color: white;
+        -fx-border-color: #e0e0e0;
+        -fx-border-width: 0 0 1 0;
+    }
+
+    .table-row-cell:odd {
+        -fx-background-color: #f8f9fa;
+    }
+
+    .table-row-cell:selected {
+        -fx-background-color: #e3f2fd;
+    }
+
+    .action-button {
+        -fx-background-color: #3498db;
+        -fx-text-fill: white;
+        -fx-font-weight: bold;
+        -fx-padding: 5 10;
+        -fx-background-radius: 5;
+    }
+
+    .action-button:hover {
+        -fx-background-color: #2980b9;
+    }
+
+    /* Status Labels */
+    .status-pending {
+        -fx-text-fill: #f39c12;
+        -fx-font-weight: bold;
+    }
+
+    .status-completed {
+        -fx-text-fill: #27ae60;
+        -fx-font-weight: bold;
+    }
+
+    /* Dialog Styling */
+    .dialog-pane {
+        -fx-background-color: white;
+    }
+
+    .dialog-pane .header-panel {
+        -fx-background-color: #2c3e50;
+    }
+
+    .dialog-pane .header-panel .label {
+        -fx-text-fill: white;
+        -fx-font-size: 16px;
+    }
+
+    .dialog-pane .button-bar .button {
+        -fx-background-color: #3498db;
+        -fx-text-fill: white;
+        -fx-font-weight: bold;
+        -fx-padding: 8 15;
+        -fx-background-radius: 5;
+    }
+
+    .dialog-pane .button-bar .button:hover {
+        -fx-background-color: #2980b9;
+    }
+.content-area {
+    -fx-background-color: #f0f2f5;
+}
+
+.section-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1a1a1a;
+}
+
+.donation-card {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0);
+    -fx-min-width: 800;
+    -fx-max-width: 800;
+    -fx-border-color: #e4e6eb;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+}
+
+.donation-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1a1a1a;
+}
+
+.donation-description {
+    -fx-font-size: 14px;
+    -fx-opacity: 0.9;
+    -fx-text-fill: #65676b;
+}
+
+.donate-button {
+    -fx-background-color: #1877f2;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 15;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+    -fx-font-size: 14px;
+}
+
+.donate-button:hover {
+    -fx-background-color: #166fe5;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 3, 0, 0, 0);
+}
+
+.donation-scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+}
+
+.donation-cards-container {
+    -fx-padding: 10;
+}
+
+/* Dialog Styling */
+.donation-dialog {
+    -fx-background-color: white;
+}
+
+.donation-dialog .header-panel {
+    -fx-background-color: #2c3e50;
+}
+
+.donation-dialog .header-panel .label {
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+}
+
+.donation-dialog .button-bar .button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 15;
+    -fx-background-radius: 5;
+}
+
+.donation-dialog .button-bar .button:hover {
+    -fx-background-color: #2980b9;
+}
+
+/* Success Dialog Styling */
+.success-dialog {
+    -fx-background-color: white;
+}
+
+.success-dialog .header-panel {
+    -fx-background-color: #27ae60;
+}
+
+.success-dialog .header-panel .label {
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+}
+
+.success-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #27ae60;
+}
+
+.success-details {
+    -fx-font-size: 14px;
+    -fx-text-fill: #2c3e50;
+    -fx-alignment: center;
+}
+
+.chart {
+    -fx-background-color: white;
+    -fx-padding: 10;
+}
+
+.chart-card {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-color: #dddddd;
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+    -fx-padding: 15;
+}
+
+.chart-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+/* Pie Chart specific styles */
+.pie-chart {
+    -fx-padding: 10;
+}
+
+.pie-chart-label {
+    -fx-font-size: 12px;
+    -fx-fill: #2c3e50;
+}
+
+/* Bar Chart specific styles */
+.bar-chart {
+    -fx-padding: 10;
+}
+
+.bar-chart-bar {
+    -fx-background-color: #3498db;
+}
+
+.axis-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #2c3e50;
+}
+/* Success dialog styling */
+.success-dialog {
+    -fx-background-color: #f0f9eb;
+    -fx-border-color: #c3e6cb;
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+    -fx-padding: 20px;
+}
+
+.success-title {
+    -fx-text-fill: #155724;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.success-details {
+    -fx-text-fill: #0c5460;
+    -fx-font-size: 14px;
+}
+
+/* Table styling */
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: #ddd;
+    -fx-border-radius: 5px;
+}
+
+.table-column {
+    -fx-alignment: CENTER-LEFT;
+    -fx-font-size: 14px;
+}

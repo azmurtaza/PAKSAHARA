@@ -1,96 +1,61 @@
 package com.example.paksahara.model;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class Product {
-    private int productID;
-    private String name;
+    private int id;
+    private String title;
     private String description;
-    private String imagePath;
+    private String imageUrl;
+    private LocalDateTime dateAdded;
     private double price;
-    private int stockQuantity;
+    private int stock;
+    private int categoryId;
+    private String categoryName;
+    private String status;
 
-    public Product(int productID, String name, String description, double price, int stockQuantity,  String imagePath) {
-        this.productID = productID;
-        this.name = name;
+    public Product(int id, String title, String description, String imageUrl,
+                   LocalDateTime dateAdded, double price, int stock,
+                   int categoryId, String categoryName, String status) {
+        this.id = id;
+        this.title = title;
         this.description = description;
+        this.imageUrl = imageUrl;
+        this.dateAdded = dateAdded;
         this.price = price;
-        this.stockQuantity = stockQuantity;
-        this.imagePath = imagePath;
+        this.stock = stock;
+        this.categoryId = categoryId;
+        this.categoryName = categoryName;
+        this.status = status;
     }
 
-    /**
-     * Create a product without specifying an ID;
-     * the DAO will auto-generate it for you.
-     */
-    public Product(String name,
-                   String description,
-                   double price,
-                   int stockQuantity,
-                   String imagePath) {
-        // give it a dummy 0; the DAO will replace it with the real ID
-        this(0, name, description, price, stockQuantity, imagePath);
-    }
+    // Getters...
+    public int getId() { return id; }
+    public String getTitle() { return title; }
+    public String getDescription() { return description; }
+    public String getImageUrl() { return imageUrl; }
+    public LocalDateTime getDateAdded() { return dateAdded; }
+    public double getPrice() { return price; }
+    public int getStock() { return stock; }
+    public int getCategoryId() { return categoryId; }
+    public String getCategoryName() { return categoryName; }
+    public String getStatus() { return status; }
 
-
-    public String getImagePath() {
-        return imagePath;
-    }
-
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
-    }
-
-    public void setProductID(int productID) {
-        this.productID = productID;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    // Setters for update functionality
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public void setPrice(double price) {
         this.price = price;
     }
 
-    public void setStockQuantity(int stockQuantity) {
-        this.stockQuantity = stockQuantity;
+    public void setStock(int stock) {
+        this.stock = stock;
     }
 
-    public double getPrice() {
-        return price;
-    }
-
-    public int getProductID() {
-        return productID;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public int getStockQuantity() {
-        return stockQuantity;
-    }
-
-
-    public void updateStock(int quantity) {
-        this.stockQuantity = quantity;
-        System.out.println("Stock updated. New stock: " + stockQuantity);
-    }
-
-    public void reduceStock(int quantity) {
-        if (quantity > 0 && stockQuantity >= quantity) {
-            stockQuantity -= quantity;
-            System.out.println(quantity + " units sold. Remaining stock: " + stockQuantity);
-        } else {
-            System.out.println("Insufficient stock to reduce!");
-        }
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

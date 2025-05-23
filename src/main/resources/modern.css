@@ -1,0 +1,37 @@
+/* modern.css */
+
+/* General nav-button style: flat, professional */
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ecf0f1;
+    -fx-font-size: 14px;
+    -fx-font-weight: semi-bold;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 10 20;
+    -fx-background-insets: 0;
+    -fx-border-color: transparent;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-cursor: hand;
+}
+
+.nav-button:hover {
+    -fx-background-color: #34495e;
+    -fx-text-fill: #ffffff;
+}
+
+/* Logout button: subtle but distinct */
+.logout-button {
+    -fx-text-fill: #e74c3c;
+}
+
+.logout-button:hover {
+    -fx-background-color: #2c3e50;
+    -fx-text-fill: #ffffff;
+}
+
+/* Right content area: clean white background */
+.content-area {
+    -fx-background-color: #ffffff;
+    -fx-padding: 24;
+}

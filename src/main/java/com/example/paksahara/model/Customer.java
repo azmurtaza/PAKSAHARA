@@ -4,16 +4,26 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 public class Customer extends User{
     private String shippingAddress;
     private String phoneNumber;
     private Map<Product, Integer> shoppingCart;
 
-    public Customer(int userID, String name, String email, String password, String shippingAddress, String phoneNumber){
-        super(userID, name, email, password);
+    public Customer(int userID, String name, String email, String password,
+                    String shippingAddress, String phoneNumber) {
+        super(userID, name, email, password, "END_USER");
         this.shippingAddress = shippingAddress;
         this.phoneNumber = phoneNumber;
         this.shoppingCart = new HashMap<>();
+    }
+
+
+
+    public void addToCart(Product product) {
+        shoppingCart.put(product, shoppingCart.getOrDefault(product, 0) + 1);
+        System.out.println(product.getTitle() + " added to cart."); // Corrected to getTitle()
     }
 
     public String getPhoneNumber() {
@@ -30,11 +40,6 @@ public class Customer extends User{
     }
 
     public ArrayList<Product> viewProducts = new ArrayList<Product>();
-
-    public void addToCart(Product product){
-        shoppingCart.put(product, shoppingCart.getOrDefault(product, 0) + 1);
-        System.out.println(product.getName() + " added to cart.");
-    }
 
     public Order checkout(){
         if (shoppingCart.isEmpty()) {

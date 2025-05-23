@@ -1,68 +1,70 @@
+// src/main/java/com/example/paksahara/model/User.java
 package com.example.paksahara.model;
 
-public abstract class User implements Authenticable {
-    private int userID;
-    private String name;
+public class User {
+    private int id;
+    private String firstName;
+    private String lastName;
     private String email;
+    private String role;
     private String password;
-    private boolean isLoggedIn;        // primitive boolean
+    private String imageUrl;          // NEW
 
-    // new setter
-    public void setLoggedIn(boolean loggedIn) {
-        this.isLoggedIn = loggedIn;
+    // Full constructor (with image)
+    public User(int id,
+                String firstName,
+                String lastName,
+                String email,
+                String role,
+                String imageUrl) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName  = lastName;
+        this.email     = email;
+        this.role      = role;
+        this.imageUrl  = imageUrl;
     }
 
-    public boolean isLoggedIn() {
-        return isLoggedIn;
+    // Legacy constructor (no image)
+    public User(int id,
+                String firstName,
+                String lastName,
+                String email,
+                String role) {
+        this(id, firstName, lastName, email, role, null);
     }
 
-    public User(){
-
+    public User(int id,
+                String name,
+                String email,
+                String role) {
+        this(id, name, email, role, null);
     }
 
-    public User(int userID, String name, String email, String password){
-        this.userID = userID;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.isLoggedIn = false;
-    }
+    public User() { }
 
-    public int getUserID() {
-        return userID;
-    }
+    // Getters & setters
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
-    public String getName() {
-        return name;
-    }
+    public String getFirstName() { return firstName; }           // NEW
+    public void setFirstName(String fn) { this.firstName = fn; } // NEW
 
-    public String getEmail() {
-        return email;
-    }
+    public String getLastName() { return lastName; }             // NEW
+    public void setLastName(String ln) { this.lastName = ln; }   // NEW
 
-    public String getPassword() {
-        return password;
-    }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    @Override
-    public boolean login(String email, String password) {
-        if (this.email.equals(email) && this.password.equals(password)) {
-            isLoggedIn = true;
-            System.out.println("Login successful for: " + name);
-            return true;
-        } else {
-            System.out.println("Login failed. Incorrect email or password.");
-            return false;
-        }
-    }
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 
-    @Override
-    public void logout() {
-        if (isLoggedIn) {
-            isLoggedIn = false;
-            System.out.println(name + " has logged out.");
-        } else {
-            System.out.println(name + " is not logged in.");
-        }
-    }
+    public String getPassword() { return password; }
+    public void setPassword(String pw) { this.password = pw; }
+
+    public String getImageUrl() { return imageUrl; }            // NEW
+    public void setImageUrl(String url) { this.imageUrl = url; } // NEW
+
+    /** Convenience: full name */
+    public String getName() { return firstName + " " + lastName; }
 }

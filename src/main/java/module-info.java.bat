@@ -4,8 +4,5 @@ module com.example.paksahara {
     requires java.sql;
 
     opens com.example.paksahara to javafx.fxml;
-    opens com.example.paksahara.controller to javafx.fxml;
-
     exports com.example.paksahara;
-    exports com.example.paksahara.controller;
 }

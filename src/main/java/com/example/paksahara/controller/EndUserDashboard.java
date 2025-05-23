@@ -1,0 +1,119 @@
+package com.example.paksahara.controller;
+
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class EndUserDashboard implements Initializable {
+    // FXML may call openCart/openProfile directly
+    @FXML private void openCart() { handleCart(); }
+    @FXML private void openProfile() { handleProfile(); }
+    @FXML private void openOrders() { handleOrders(); }
+    @FXML private StackPane contentArea;
+    @FXML private Button logoutButton;
+    @FXML private Button homeButton;
+    @FXML private Button cartButton;
+    @FXML private Button ordersButton;
+    @FXML private Button profileButton;
+    private int currentUserId;
+
+    public void setCurrentUserId(int id) {
+        this.currentUserId = id;
+        loadHome();  // default view
+        setActiveButton(homeButton);
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        // no-op
+    }
+
+    @FXML
+    private void handleLogout() {
+        try {
+            Parent login = FXMLLoader.load(getClass().getResource("/com/example/paksahara/login.fxml"));
+            Stage stage = (Stage) contentArea.getScene().getWindow();
+            stage.getScene().setRoot(login);
+        } catch (IOException e) {
+            showError("Logout failed: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleHome() {
+        loadView("homeContent.fxml");
+        setActiveButton(homeButton);
+    }
+
+    @FXML
+    private void handleCart() {
+        loadView("cartContent.fxml");
+        setActiveButton(cartButton);
+    }
+
+    @FXML
+    private void handleOrders() {
+        // load your orders/transactions view
+        loadView("transaction_report.fxml");
+        setActiveButton(ordersButton);
+    }
+
+    @FXML
+    private void handleProfile() {
+        // ensure profile.fxm is lowercase if your file is named so
+        loadView("profile.fxml");
+        setActiveButton(profileButton);
+    }
+
+    private void loadHome() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/paksahara/homeContent.fxml"));
+            Parent pane = loader.load();
+            HomeContent homeCtrl = loader.getController();
+            homeCtrl.setCurrentUserId(currentUserId);
+            contentArea.getChildren().setAll(pane);
+        } catch (IOException e) {
+            showError("Could not load home: " + e.getMessage());
+        }
+    }
+
+    private void loadView(String fxmlFile) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/paksahara/" + fxmlFile));
+            Parent view = loader.load();
+            Object controller = loader.getController();
+            // propagate userId to known controllers
+            if (controller instanceof CartContent) {
+                ((CartContent) controller).setCurrentUserId(currentUserId);
+            }
+            // if TransactionReportController needs userId, implement method there and uncomment:
+            // else if (controller instanceof TransactionReportController) {
+            //     ((TransactionReportController) controller).setCurrentUserId(currentUserId);
+            // }
+            contentArea.getChildren().setAll(view);
+        } catch (IOException e) {
+            showError("Could not load view " + fxmlFile + ": " + e.getMessage());
+        }
+    }
+
+    private void showError(String msg) {
+        new Alert(Alert.AlertType.ERROR, msg).showAndWait();
+    }
+
+    private void setActiveButton(Button active) {
+        homeButton.getStyleClass().remove("active");
+        cartButton.getStyleClass().remove("active");
+        ordersButton.getStyleClass().remove("active");
+        profileButton.getStyleClass().remove("active");
+        active.getStyleClass().add("active");
+    }
+}
