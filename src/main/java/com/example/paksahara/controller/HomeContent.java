@@ -40,7 +40,16 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
+import com.example.paksahara.model.Product;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
+import java.io.File;
+import java.util.function.Consumer;
 public class HomeContent implements Initializable {
     @FXML private TextField searchField;
     @FXML private ComboBox<String> categoryFilter;
@@ -49,13 +58,19 @@ public class HomeContent implements Initializable {
     @FXML private ComboBox<String> departmentFilter;
     @FXML private GridPane itemsGrid;
 
+    @FXML private ImageView cardImage;
+    @FXML private Label cardTitle;
+    @FXML private Label cardCategory;
+    @FXML private Label cardPrice;
+    @FXML private Label cardStatus;
+    @FXML private Button actionBtn;
     private int currentUserId;
 
     public void setCurrentUserId(int id) {
         this.currentUserId = id;
         loadProducts();
     }
-
+    private Consumer<Product> onAddToCart;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setupCategoryFilter();
@@ -80,40 +95,73 @@ public class HomeContent implements Initializable {
 
     private void loadProducts() {
         productsGrid.getChildren().clear();
-        String search = searchField.getText().trim().toLowerCase();
-        String cat   = categoryFilter.getValue();
+        String search = searchField.getText().toLowerCase(), cat = categoryFilter.getValue();
+
         String sql = """
-            SELECT p.*, c.name AS category_name
-            FROM product p
-            JOIN category c ON p.category_id=c.category_id
-            WHERE p.status='ACTIVE'
-            """ + (cat!=null && !cat.equals("All Categories") ? " AND c.name=? " : "")
+      SELECT p.product_id, p.title, p.description, p.image_url,
+             p.price, p.stock, p.category_id, c.name AS category_name, p.status
+      FROM product p
+      JOIN category c ON p.category_id=c.category_id
+      WHERE p.status='ACTIVE'
+      """ + (cat!=null && !cat.equals("All Categories") ? " AND c.name=? " : "")
                 + "ORDER BY p.date_added DESC";
 
-        try (Connection conn = DBUtils.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql))
-        {
-            if (cat!=null && !cat.equals("All Categories")) {
+        try (var conn=DBUtils.getConnection();
+             var ps=conn.prepareStatement(sql)) {
+
+            if (cat!=null && !cat.equals("All Categories"))
                 ps.setString(1, cat);
-            }
-            ResultSet rs = ps.executeQuery();
 
-            int row = 0, col = 0, maxCols = 3;
+            var rs = ps.executeQuery();
+            int row=0, col=0, maxCols=3;
+
             while (rs.next()) {
-                String title = rs.getString("title");
-                if (!search.isEmpty() && !title.toLowerCase().contains(search) &&
-                        !rs.getString("description").toLowerCase().contains(search))
-                    continue;
+                String title=rs.getString("title"),
+                        desc =rs.getString("description");
+                if (!search.isEmpty()
+                        && !title.toLowerCase().contains(search)
+                        && !desc.toLowerCase().contains(search)) continue;
 
-                VBox card = createProductCard(rs);
+                Product p = new Product(
+                        rs.getInt("product_id"),
+                        title, desc,
+                        rs.getString("image_url"),
+                        rs.getDouble("price"),
+                        rs.getInt("stock"),
+                        rs.getInt("category_id"),
+                        rs.getString("category_name"),
+                        rs.getString("status")
+                );
+
+                FXMLLoader loader = new FXMLLoader(
+                        getClass().getResource("/com/example/paksahara/fxml/user_product_card.fxml")
+                );
+                AnchorPane card = loader.load();
+                ProductCardController ctrl = loader.getController();
+
+                // now pass a Pair<Product,qty>
+                ctrl.setDataForUser(p, pair -> {
+                    int uid = SessionManager.getCurrentUserId();
+                    DBUtils.addToCart(uid, pair.getKey().getId(), pair.getValue());
+                    // optionally refresh cart view here
+                    new Alert(Alert.AlertType.INFORMATION,
+                            pair.getValue() + " x " + pair.getKey().getTitle()
+                                    + " added to cart.")
+                            .showAndWait();
+                });
+
                 productsGrid.add(card, col, row);
-                if (++col >= maxCols) { col = 0; row++; }
+                if (++col>=maxCols) { col=0; row++; }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            showAlert("Error loading products", e.getMessage());
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            showAlert("Error loading products", ex.getMessage());
         }
     }
+
+
+
 
     private VBox createProductCard(ResultSet rs) throws SQLException {
         int           id    = rs.getInt("product_id");
@@ -151,7 +199,11 @@ public class HomeContent implements Initializable {
         Button btnCart   = new Button("Add to Cart");
         btnCart.setDisable(stock<=0);
         btnCart.setOnAction(e -> {
-            CartContent.addToCart(currentUserId, id);
+            try {
+                CartContent.addToCart(currentUserId, id);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
             showAlert("Added to Cart", title + " has been added.");
         });
 
@@ -182,6 +234,17 @@ public class HomeContent implements Initializable {
             showAlert("Error", "Could not load product details.");
         }
     }
+
+    private void addToCart(Product p) {
+        try {
+            CartContent.addToCart(currentUserId, p.getId());
+            showAlert("Success", p.getTitle() + " has been added to your cart.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert("Error", "Could not add to cart.");
+        }
+    }
+
 
     private void showAlert(String title, String msg) {
         Alert a = new Alert(Alert.AlertType.INFORMATION);
@@ -214,6 +277,35 @@ public class HomeContent implements Initializable {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void setData(Product p, Consumer<Product> onAddToCart) {
+        this.onAddToCart = onAddToCart;
+
+        cardTitle.setText(p.getTitle());
+        cardCategory.setText(p.getCategoryName());
+        cardPrice.setText("₨ " + p.getPrice());
+        cardStatus.setText(p.getStatus());
+
+        // Load image
+        try {
+            String path = p.getImageUrl();
+            if (!path.startsWith("file:")) {
+                path = new File(path).toURI().toString();
+            }
+            Image image = new Image(path, 180, 120, true, true);
+            cardImage.setImage(image);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // fallback image
+            cardImage.setImage(new Image(getClass().getResource("/icon.png").toExternalForm()));
+        }
+
+        // Change button text to Add to Cart
+        actionBtn.setText("Add to Cart");
+        actionBtn.setOnAction(e -> {
+            if (this.onAddToCart != null) this.onAddToCart.accept(p);
+        });
     }
 
     @FXML

@@ -8,10 +8,11 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-
+import javafx.application.Platform;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import com.example.paksahara.session.SessionManager;
 
 public class EndUserDashboard implements Initializable {
     // FXML may call openCart/openProfile directly
@@ -24,17 +25,35 @@ public class EndUserDashboard implements Initializable {
     @FXML private Button cartButton;
     @FXML private Button ordersButton;
     @FXML private Button profileButton;
-    private int currentUserId;
+    private int currentUserId;// or StackPane, AnchorPane—whatever your FXML root is
+    @FXML private Button  cartBtn;
 
     public void setCurrentUserId(int id) {
         this.currentUserId = id;
-        loadHome();  // default view
-        setActiveButton(homeButton);
+        loadHome();
+        setActiveButton(homeButton); // already correctly implemented
     }
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // no-op
+        Platform.runLater(() -> {
+            loadHome(); // Ensure it loads after the scene is ready
+            setActiveButton(homeButton);
+        });
+    }
+    private void loadProfile() {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/com/example/paksahara/fxml/profile.fxml")
+            );
+            Parent pane = loader.load();
+            ProfileController ctrl = loader.getController();
+            ctrl.setCurrentUserId(SessionManager.getCurrentUserId());
+            contentArea.getChildren().setAll(pane);
+        } catch (IOException ex) {
+            showError("Could not load profile: " + ex.getMessage());
+        }
     }
 
     @FXML
@@ -76,34 +95,43 @@ public class EndUserDashboard implements Initializable {
 
     private void loadHome() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/paksahara/homeContent.fxml"));
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/com/example/paksahara/homeContent.fxml")
+            );
             Parent pane = loader.load();
-            HomeContent homeCtrl = loader.getController();
-            homeCtrl.setCurrentUserId(currentUserId);
+            HomeContent ctrl = loader.getController();
+            ctrl.setCurrentUserId(SessionManager.getCurrentUserId());
             contentArea.getChildren().setAll(pane);
-        } catch (IOException e) {
-            showError("Could not load home: " + e.getMessage());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            showError("Could not load home: " + ex.getMessage());
         }
     }
 
+
+
     private void loadView(String fxmlFile) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/paksahara/" + fxmlFile));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/com/example/paksahara/" + fxmlFile
+            ));
             Parent view = loader.load();
             Object controller = loader.getController();
-            // propagate userId to known controllers
-            if (controller instanceof CartContent) {
+
+            // propagate userId to known controllers:
+            if (controller instanceof HomeContent) {
+                ((HomeContent) controller).setCurrentUserId(currentUserId);
+            } else if (controller instanceof CartContent) {
                 ((CartContent) controller).setCurrentUserId(currentUserId);
             }
-            // if TransactionReportController needs userId, implement method there and uncomment:
-            // else if (controller instanceof TransactionReportController) {
-            //     ((TransactionReportController) controller).setCurrentUserId(currentUserId);
-            // }
+            // …add other instanceof checks here as needed (e.g. ProfileController)
+
             contentArea.getChildren().setAll(view);
         } catch (IOException e) {
             showError("Could not load view " + fxmlFile + ": " + e.getMessage());
         }
     }
+
 
     private void showError(String msg) {
         new Alert(Alert.AlertType.ERROR, msg).showAndWait();

@@ -14,6 +14,7 @@ import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -37,7 +38,18 @@ public class ProfileController implements Initializable {
         // load via SessionManager
         currentUserId = SessionManager.getCurrentUserId();
         loadUserData();
+
+        if (imagePath != null && !imagePath.isEmpty()) {
+            try {
+                profileImageView.setImage(new Image(new File(imagePath).toURI().toString()));
+            } catch (Exception e) {
+                profileImageView.setImage(new Image("/icon.png"));
+            }
+        } else {
+            profileImageView.setImage(new Image("/icon.png"));
+        }
     }
+    String imagePath = currentUser.getImageUrl();
 
     private void loadUserData() {
         currentUser = DBUtils.fetchUserById(currentUserId);
@@ -59,7 +71,7 @@ public class ProfileController implements Initializable {
         }
         if (is == null) {
             // fallback default
-            is = getClass().getResourceAsStream("/com/example/paksahara/images/default-avatar.png");
+            is = getClass().getResourceAsStream("/icon.png");
         }
         if (is != null) {
             profileImageView.setImage(new Image(is,150,150,true,true));
@@ -132,4 +144,10 @@ public class ProfileController implements Initializable {
     private void showError(String message) {
         new Alert(Alert.AlertType.ERROR, message).showAndWait();
     }
+
+    public void setCurrentUserId(int id) {
+        this.currentUserId = id;
+        loadUserData();
+    }
+
 }

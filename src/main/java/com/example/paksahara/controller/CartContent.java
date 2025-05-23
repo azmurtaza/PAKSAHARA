@@ -7,8 +7,12 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import com.example.paksahara.model.Product;
+import com.example.paksahara.session.SessionManager;
+import javafx.scene.control.Alert;
 
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -68,10 +72,12 @@ public class CartContent implements Initializable {
      * @param productId the ID of the product
      * @param quantity how many to add
      */
-    public static void addToCart(int userId, int productId, int quantity) {
+    public static void addToCart(int userId, int productId, int quantity) throws SQLException {
         DBUtils.addToCart(userId, productId, quantity);
     }
-    public static void addToCart(int userId, int productId) {
+    public static void addToCart(int userId, int productId) throws SQLException {
         DBUtils.addToCart(userId, productId, 1);
     }
+
+
 }

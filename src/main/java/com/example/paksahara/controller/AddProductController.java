@@ -59,17 +59,25 @@ public class AddProductController {
             try {
                 String imagePath = saveImage();
 
-                String query = "INSERT INTO product (title, description, category, price, stock, image_path) " +
-                        "VALUES (?, ?, ?, ?, ?, ?)";
+                // Get category_id from category name
+                int categoryId = getCategoryIdByName(categoryCombo.getValue());
+                if (categoryId == -1) {
+                    showAlert(Alert.AlertType.ERROR, "Error", "Selected category not found.");
+                    return;
+                }
+
+                String query = "INSERT INTO product (title, description, image_url, price, stock, category_id, date_added, status) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
                 PreparedStatement stmt = DBUtils.getConnection().prepareStatement(query);
                 stmt.setString(1, titleField.getText());
                 stmt.setString(2, descArea.getText());
-                stmt.setString(3, categoryCombo.getValue());
+                stmt.setString(3, imagePath);
                 stmt.setDouble(4, Double.parseDouble(priceField.getText()));
                 stmt.setInt(5, Integer.parseInt(stockField.getText()));
-                stmt.setString(6, imagePath);
-                //stmt.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
+                stmt.setInt(6, categoryId);
+                stmt.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
+                stmt.setString(8, "ACTIVE");
 
                 stmt.executeUpdate();
 
@@ -78,9 +86,20 @@ public class AddProductController {
 
             } catch (SQLException e) {
                 e.printStackTrace();
-                showAlert(Alert.AlertType.ERROR, "Error", "Failed to save product.");
+                showAlert(Alert.AlertType.ERROR, "Error", "Failed to save product.\n" + e.getMessage());
             }
         }
+    }
+
+    private int getCategoryIdByName(String categoryName) throws SQLException {
+        String sql = "SELECT category_id FROM category WHERE name = ?";
+        PreparedStatement stmt = DBUtils.getConnection().prepareStatement(sql);
+        stmt.setString(1, categoryName);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            return rs.getInt("category_id");
+        }
+        return -1; // Not found
     }
 
     private boolean validateInput() {
@@ -112,14 +131,12 @@ public class AddProductController {
 
             try {
                 Files.copy(selectedImage.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                return destFile.getAbsolutePath();
+                return "uploads/" + fileName; // Relative path
             } catch (IOException e) {
-                e.printStackTrace();
                 throw new SQLException("Failed to save image");
             }
         }
-
-        return "default.jpg";
+        return "/icon.png"; // Changed to icon.png
     }
 
     private void clearFields() {

@@ -141,6 +141,9 @@ public class AdminHomeController implements Initializable {
                     data.add(new PieChart.Data(rs.getString("name"), rs.getInt("cnt")));
                 }
                 categoryChart.getData().setAll(data);
+                categoryChart.setLegendVisible(true);
+                categoryChart.setLabelsVisible(true);
+
             }
 
             // Stock status chart

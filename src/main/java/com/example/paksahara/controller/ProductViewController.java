@@ -8,7 +8,9 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
-
+import java.util.function.Consumer;
+import java.sql.SQLException;
+import javafx.scene.control.Alert;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -36,12 +38,28 @@ public class ProductViewController implements Initializable {
         grid.getChildren().clear();
         List<Product> products = DBUtils.fetchAllProducts();
         int col = 0, row = 0;
+
         for (Product p : products) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/paksahara/fxml/product_card.fxml"));
+                FXMLLoader loader = new FXMLLoader(
+                        getClass().getResource("/com/example/paksahara/fxml/product_card.fxml")
+                );
                 Node card = loader.load();
                 ProductCardController ctrl = loader.getController();
-                ctrl.setData(p);
+
+                // **Use the 2-arg setData**, passing in a delete-callback**
+                Consumer<Product> deleteCallback = prod -> {
+                    try {
+                        DBUtils.deleteProduct(prod.getId());
+                        loadProducts();   // refresh grid
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        new Alert(Alert.AlertType.ERROR, "Delete failed:\n" + e.getMessage())
+                                .showAndWait();
+                    }
+                };
+                ctrl.setDataForAdmin(p, deleteCallback);
+
                 GridPane.setMargin(card, new Insets(10));
                 grid.add(card, col, row);
                 if (++col == 3) {

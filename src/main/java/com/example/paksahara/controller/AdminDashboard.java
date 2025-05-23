@@ -76,6 +76,12 @@ public class AdminDashboard implements Initializable {
     }
 
     @FXML
+    private void loadProducts() {
+        loadView("/com/example/paksahara/admin_products.fxml", productsButton);
+    }
+
+
+    @FXML
     private void handleChooseImage() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Select Product Image");

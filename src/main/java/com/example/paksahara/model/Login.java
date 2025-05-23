@@ -11,7 +11,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.scene.Parent;
-
+import java.sql.*;
 import java.io.IOException;
 
 public class Login {
@@ -23,12 +23,19 @@ public class Login {
 
     @FXML
     public void handleLogin(ActionEvent event) {
-        String email = emailField.getText();
+        String email    = emailField.getText();
         String password = passwordField.getText();
 
         System.out.println("Login Attempt: " + email + " | " + password);
 
-        LoginResult result = DBUtils.checkLoginCredentials(email, password);
+        LoginResult result;
+        try {
+            result = DBUtils.checkLoginCredentials(email, password);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            errorLabel.setText("Database error—please try again.");
+            return;
+        }
 
         if (result == null) {
             errorLabel.setText("Invalid email or password.");
@@ -37,14 +44,15 @@ public class Login {
         }
 
         System.out.println("Login successful: " + result.getRole());
-
         SessionManager.setCurrentUser(result.getUserId(), result.getRole());
 
         try {
             FXMLLoader loader;
             switch (result.getRole().toUpperCase()) {
-                case "ADMIN" -> loader = new FXMLLoader(getClass().getResource("/com/example/paksahara/admin_dashboard.fxml"));
-                case "END_USER" -> loader = new FXMLLoader(getClass().getResource("/com/example/paksahara/endUser_dashboard.fxml"));
+                case "ADMIN"     -> loader = new FXMLLoader(
+                        getClass().getResource("/com/example/paksahara/admin_dashboard.fxml"));
+                case "END_USER"  -> loader = new FXMLLoader(
+                        getClass().getResource("/com/example/paksahara/endUser_dashboard.fxml"));
                 default -> {
                     errorLabel.setText("Unauthorized role.");
                     return;
@@ -54,6 +62,9 @@ public class Login {
             Parent dashboard = loader.load();
             Stage stage = (Stage) emailField.getScene().getWindow();
             stage.setScene(new Scene(dashboard));
+            stage.setWidth(1200);
+            stage.setHeight(800);
+            stage.centerOnScreen();
             stage.setTitle("Dashboard");
             stage.show();
 

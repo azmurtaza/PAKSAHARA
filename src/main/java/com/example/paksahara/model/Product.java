@@ -1,5 +1,7 @@
 package com.example.paksahara.model;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -31,7 +33,11 @@ public class Product {
     public int getId() { return id; }
     public String getTitle() { return title; }
     public String getDescription() { return description; }
-    public String getImageUrl() { return imageUrl; }
+    public String getImageUrl() {
+        return (this.imageUrl != null && !this.imageUrl.isEmpty())
+                ? this.imageUrl
+                : "icon.png"; // Default if null/empty
+    }
     //public LocalDateTime getDateAdded() { return dateAdded; }
     public double getPrice() { return price; }
     public int getStock() { return stock; }
@@ -55,4 +61,17 @@ public class Product {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public Product(ResultSet rs) throws SQLException {
+        this.id = rs.getInt("product_id");
+        this.title = rs.getString("title");
+        this.description = rs.getString("description");
+        this.imageUrl = rs.getString("image_url");
+        this.price = rs.getDouble("price");
+        this.stock = rs.getInt("stock");
+        this.categoryId = rs.getInt("category_id");
+        this.categoryName = rs.getString("category"); // alias in your SQL
+        this.status = rs.getString("status");
+    }
+
 }

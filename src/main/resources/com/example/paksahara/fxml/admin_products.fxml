@@ -18,7 +18,7 @@
         <Label text="Products" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
         <Region HBox.hgrow="ALWAYS"/>
         <TextField fx:id="searchField" promptText="Search…"
-                   style="-fx-pref-width: 200px;"/>
+                   style="-fx-pref-width:a 200px;"/>
     </HBox>
 
     <!-- Cards Container -->

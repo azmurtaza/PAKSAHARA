@@ -4,12 +4,24 @@ import com.example.paksahara.model.User;
 import com.example.paksahara.model.Product;
 import com.example.paksahara.model.Order;
 import com.example.paksahara.model.LoginResult;
+
+import java.awt.*;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.io.*;
 import java.sql.*;
+import com.example.paksahara.session.SessionManager;
+import java.util.function.Consumer;
+import com.example.paksahara.controller.CartContent;
+
+import com.example.paksahara.model.User;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.layout.Pane;
+
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -93,7 +105,7 @@ public class DBUtils {
         addToCart(userId, productId, 1);
     }
 
-    public static LoginResult checkLoginCredentials(String email, String password) {
+    public static LoginResult checkLoginCredentials(String email, String password) throws SQLException{
         String sql = "SELECT user_id, role FROM users WHERE email=? AND password=?";
         try (Connection c = getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
@@ -108,41 +120,74 @@ public class DBUtils {
         }
         return null;
     }
-    public static void addToCart(int userId, int productId, int quantity) {
-        String checkSql = "SELECT quantity FROM cart WHERE user_id = ? AND product_id = ?";
-        String insertSql = "INSERT INTO cart (user_id, product_id, quantity) VALUES (?, ?, ?)";
-        String updateSql = "UPDATE cart SET quantity = ? WHERE user_id = ? AND product_id = ?";
-        try (Connection conn = getConnection()) {
-            conn.setAutoCommit(false);
-            try (PreparedStatement checkPs = conn.prepareStatement(checkSql)) {
-                checkPs.setInt(1, userId);
-                checkPs.setInt(2, productId);
-                ResultSet rs = checkPs.executeQuery();
-                if (rs.next()) {
-                    int existing = rs.getInt("quantity");
-                    try (PreparedStatement updPs = conn.prepareStatement(updateSql)) {
-                        updPs.setInt(1, existing + quantity);
-                        updPs.setInt(2, userId);
-                        updPs.setInt(3, productId);
-                        updPs.executeUpdate();
-                    }
-                } else {
-                    try (PreparedStatement insPs = conn.prepareStatement(insertSql)) {
-                        insPs.setInt(1, userId);
-                        insPs.setInt(2, productId);
-                        insPs.setInt(3, quantity);
-                        insPs.executeUpdate();
-                    }
-                }
-                conn.commit();
-            } catch (SQLException e) {
-                conn.rollback();
-                e.printStackTrace();
-            }
+    public static void addToCart(int userId, int productId, int qty) {
+        Connection conn = null;
+        try {
+            conn = getConnection();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        try {
+            conn.setAutoCommit(false);
+
+            // 1) lock & fetch current stock
+            int stock;
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "SELECT stock FROM product WHERE product_id = ? FOR UPDATE")) {
+                ps.setInt(1, productId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (!rs.next()) throw new SQLException("Product not found");
+                    stock = rs.getInt("stock");
+                }
+            }
+
+            if (qty > stock) {
+                throw new SQLException("Cannot add more than available stock (" + stock + ")");
+            }
+
+            // 2) insert/update cart
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "INSERT INTO cart (user_id, product_id, quantity) VALUES (?, ?, ?) " +
+                            "ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)")) {
+                ps.setInt(1, userId);
+                ps.setInt(2, productId);
+                ps.setInt(3, qty);
+                ps.executeUpdate();
+            }
+
+            // 3) decrement product stock
+            int newStock = stock - qty;
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE product SET stock = ? WHERE product_id = ?")) {
+                ps.setInt(1, newStock);
+                ps.setInt(2, productId);
+                ps.executeUpdate();
+            }
+
+            // 4) if stock hits zero, first clear cart rows, then delete product
+            if (newStock == 0) {
+                try (PreparedStatement ps = conn.prepareStatement(
+                        "DELETE FROM cart WHERE product_id = ?")) {
+                    ps.setInt(1, productId);
+                    ps.executeUpdate();
+                }
+                try (PreparedStatement ps = conn.prepareStatement(
+                        "DELETE FROM product WHERE product_id = ?")) {
+                    ps.setInt(1, productId);
+                    ps.executeUpdate();
+                }
+            }
+
+            conn.commit();
+        } catch (Exception ex) {
+            try { conn.rollback(); } catch (SQLException ignore) {}
+            throw new RuntimeException(ex);
+        } finally {
+            try { conn.setAutoCommit(true); } catch (SQLException ignore) {}
         }
     }
+
+
 
     // In DBUtils class
     public static User getUserById(int id) {
@@ -196,19 +241,18 @@ public class DBUtils {
     }
 
     public static List<User> fetchAllUsers() {
-        String sql = "SELECT user_id, first_name, last_name, email, role, image_url FROM users";
+        String sql = "SELECT user_id, first_name, last_name, email, role FROM users";
         List<User> users = new ArrayList<>();
         try (Connection c = getConnection();
              PreparedStatement ps = c.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
+
             while (rs.next()) {
                 users.add(new User(
                         rs.getInt("user_id"),
-                        rs.getString("first_name"),
-                        rs.getString("last_name"),
+                        rs.getString("first_name") + " " + rs.getString("last_name"),
                         rs.getString("email"),
-                        rs.getString("role"),
-                        rs.getString("image_url")
+                        rs.getString("role")
                 ));
             }
         } catch (SQLException e) {
@@ -556,6 +600,28 @@ public class DBUtils {
             ps.setInt(3, userId);
             ps.executeUpdate();
         }
+    }
+
+    @FXML
+    private Pane contentArea;   // or StackPane, AnchorPane—whatever your FXML root is
+    @FXML private Button cartBtn;
+
+    private void loadCart() {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/com/example/paksahara/fxml/cartContent.fxml")
+            );
+            Parent pane = loader.load();
+            CartContent ctrl = loader.getController();
+            ctrl.setCurrentUserId(SessionManager.getCurrentUserId());
+            contentArea.getChildren().setAll(pane);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            showError("Could not load cart: " + ex.getMessage());
+        }
+    }
+
+    private void showError(String s) {
     }
 
 

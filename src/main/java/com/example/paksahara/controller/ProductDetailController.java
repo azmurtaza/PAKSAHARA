@@ -11,9 +11,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import com.example.paksahara.controller.CartContent;
 import java.net.URL;
+import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
-
+import javafx.scene.control.Alert; // For creating alert dialogs
+import javafx.scene.control.Alert.AlertType; // For alert types
+import javafx.scene.control.Button; // For using Button class
+import java.util.function.Consumer;
 /**
  * Controller for the product detail page: shows full info and allows adding to cart.
  */
@@ -28,6 +32,7 @@ public class ProductDetailController implements Initializable {
 
     private int productId;
     private Product product;
+
 
     /**
      * Receives the product ID from the previous view.
@@ -82,10 +87,17 @@ public class ProductDetailController implements Initializable {
         }
 
         int qty = quantitySpinner.getValue();
-        CartContent.addToCart(userId, productId, qty);
+        try {
+            CartContent.addToCart(userId, productId, qty);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
         Alert confirmation = new Alert(Alert.AlertType.INFORMATION,
                 qty + " x " + product.getTitle() + " added to cart.");
         confirmation.showAndWait();
     }
+
+    Alert showAlert = new Alert(AlertType.WARNING, "ALERT!");
+
 }
