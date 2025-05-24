@@ -199,8 +199,13 @@ public class HomeContent implements Initializable {
         Button btnCart   = new Button("Add to Cart");
         btnCart.setDisable(stock<=0);
         btnCart.setOnAction(e -> {
+            try {
                 DBUtils.addToCart(currentUserId, id);
-            showAlert("Added to Cart", title + " has been added.");
+                showAlert("Added to Cart", title + " has been added.");
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                showAlert("Error", "Could not add to cart:\n" + ex.getMessage());
+            }
         });
 
         VBox info = new VBox(4, lblTitle, lblPrice, lblStock, lblCat, lblDate, new HBox(5, btnDetail, btnCart));

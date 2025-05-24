@@ -11,6 +11,24 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
+import com.example.paksahara.db.DBUtils;
+import com.example.paksahara.model.Product;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.FlowPane;
+import javafx.stage.Window;
+
+import java.io.IOException;
+import java.net.URL;
+import java.sql.SQLException;
+import java.util.ResourceBundle;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.Alert;
@@ -31,56 +49,17 @@ public class AdminProductsController implements Initializable {
 
     private List<Product> allProducts = new ArrayList<>();
 
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         loadProducts();
-        setupSearch();
     }
 
+
     private void loadProducts() {
-        allProducts.clear();
         productsContainer.getChildren().clear();
-
-        String sql = """
-            SELECT p.product_id,
-                   p.title,
-                   p.description,
-                   p.image_url,
-                   p.price,
-                   p.stock,
-                   p.category_id,
-                   c.name AS category_name,
-                   p.status
-              FROM product p
-         LEFT JOIN category c ON p.category_id = c.category_id
-          ORDER BY p.date_added DESC
-        """;
-
-        try (Connection conn = DBUtils.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-
-            while (rs.next()) {
-                allProducts.add(new Product(
-                        rs.getInt("product_id"),
-                        rs.getString("title"),
-                        rs.getString("description"),
-                        rs.getString("image_url"),
-                        rs.getDouble("price"),
-                        rs.getInt("stock"),
-                        rs.getInt("category_id"),
-                        rs.getString("category_name"),
-                        rs.getString("status")
-                ));
-            }
-
-            allProducts.forEach(this::addCardFor);
-
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            new Alert(Alert.AlertType.ERROR,
-                    "Failed to load products:\n" + ex.getMessage()
-            ).showAndWait();
+        for (Product p : DBUtils.fetchAllProducts()) {
+            addCardFor(p);
         }
     }
 
@@ -92,27 +71,53 @@ public class AdminProductsController implements Initializable {
             );
             AnchorPane card = loader.load();
             ProductCardController ctrl = loader.getController();
-
-            Consumer<Product> deleteCb = prod -> {
+            ctrl.setDataForAdmin(p, prod -> {
                 try {
                     DBUtils.deleteProduct(prod.getId());
                     loadProducts();
                 } catch (SQLException ex) {
-                    new Alert(Alert.AlertType.ERROR,
-                            "Delete failed:\n"+ex.getMessage())
-                            .showAndWait();
+                    new Alert(Alert.AlertType.ERROR, "Delete failed:\n" + ex.getMessage()).showAndWait();
                 }
-            };
-            ctrl.setDataForAdmin(p, deleteCb);
+            });
 
+            card.setOnMouseClicked(evt -> showAdminDetail(p.getId(), card));
             FlowPane.setMargin(card, new Insets(10));
             productsContainer.getChildren().add(card);
+
         } catch (IOException e) {
+            e.printStackTrace();
             new Alert(Alert.AlertType.ERROR,
-                    "Failed to load card:\n"+e.getMessage())
+                    "Failed to load product card:\n" + e.getMessage()
+            ).showAndWait();
+        }
+    }
+
+    private void showAdminDetail(int productId, AnchorPane card) {
+        try {
+            String fxmlPath = "/com/example/paksahara/fxml/admin_product_detail.fxml";
+            URL detailUrl = getClass().getResource(fxmlPath);
+            if (detailUrl == null) {
+                throw new IOException("FXML file not found at path: " + fxmlPath);
+            }
+
+            FXMLLoader detailLoader = new FXMLLoader(detailUrl);
+            DialogPane pane = detailLoader.load();
+            AdminProductDetailController detailCtrl = detailLoader.getController();
+            detailCtrl.setProduct(productId, this::loadProducts);
+
+            Dialog<Void> dlg = new Dialog<>();
+            Window owner = card.getScene().getWindow();
+            dlg.initOwner(owner);
+            dlg.getDialogPane().setContent(pane);
+            dlg.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+            dlg.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+            new Alert(Alert.AlertType.ERROR, "Could not load product details:\n" + e.getMessage())
                     .showAndWait();
         }
     }
+
 
 
     private void setupSearch() {

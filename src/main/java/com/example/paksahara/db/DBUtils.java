@@ -102,9 +102,71 @@ public class DBUtils {
 
 
     // Overload for single-quantity adds
-    public static void addToCart(int userId, int productId) {
-        addToCart(userId, productId, 1);
+    public static void addToCart(int userId, int productId) throws SQLException {
+        Connection conn = null;
+        try {
+            conn = getConnection();
+            conn.setAutoCommit(false);
+
+            // Step 1: Get available stock
+            int stock = 0;
+            try (PreparedStatement ps = conn.prepareStatement("SELECT stock FROM product WHERE product_id = ?")) {
+                ps.setInt(1, productId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) stock = rs.getInt("stock");
+                    else throw new SQLException("Product not found");
+                }
+            }
+
+            if (stock <= 0) {
+                throw new SQLException("Product is out of stock");
+            }
+
+            // Step 2: Check cart quantity
+            int existingQty = 0;
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "SELECT quantity FROM cart_items WHERE user_id = ? AND product_id = ?")) {
+                ps.setInt(1, userId);
+                ps.setInt(2, productId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) existingQty = rs.getInt("quantity");
+                }
+            }
+
+            if (existingQty >= stock) {
+                throw new SQLException("Cannot add more than available stock (" + stock + ")");
+            }
+
+            // Step 3: Upsert into cart
+            String upsertCart = """
+            INSERT INTO cart_items (user_id, product_id, quantity)
+            VALUES (?, ?, 1)
+            ON DUPLICATE KEY UPDATE quantity = quantity + 1
+        """;
+            try (PreparedStatement ps = conn.prepareStatement(upsertCart)) {
+                ps.setInt(1, userId);
+                ps.setInt(2, productId);
+                ps.executeUpdate();
+            }
+
+            // Step 4: Decrement product stock
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE product SET stock = stock - 1 WHERE product_id = ?")) {
+                ps.setInt(1, productId);
+                ps.executeUpdate();
+            }
+
+            conn.commit();
+        } catch (SQLException ex) {
+            if (conn != null) conn.rollback();
+            throw ex;
+        } finally {
+            if (conn != null) conn.setAutoCommit(true);
+            if (conn != null) conn.close();
+        }
     }
+
+
 
     public static LoginResult checkLoginCredentials(String email, String password) throws SQLException{
         String sql = "SELECT user_id, role FROM users WHERE email=? AND password=?";
@@ -490,13 +552,27 @@ public class DBUtils {
     }
 
     public static void deleteProduct(int productId) throws SQLException {
-        String sql = "DELETE FROM product WHERE product_id = ?";
+        // First check if it's referenced in orders
         try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             PreparedStatement ps = conn.prepareStatement(
+                     "SELECT COUNT(*) FROM order_items WHERE product_id = ?")) {
+            ps.setInt(1, productId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next() && rs.getInt(1) > 0) {
+                    throw new SQLException("Cannot delete: Product is referenced in orders.");
+                }
+            }
+        }
+
+        // Proceed with delete
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(
+                     "DELETE FROM product WHERE product_id = ?")) {
             ps.setInt(1, productId);
             ps.executeUpdate();
         }
     }
+
 
     public static List<Product> fetchAllProducts() {
         String sql = """
@@ -530,24 +606,40 @@ public class DBUtils {
     }
 
     public static Product fetchProductById(int id) {
-        String sql = "SELECT * FROM product WHERE product_id = ?";  // ✅ Correct table & column
+        String sql = """
+        SELECT 
+          p.product_id,
+          p.title,
+          p.description,
+          p.image_url,
+          p.price,
+          p.stock,
+          p.category_id,
+          c.name AS category_name,
+          p.status
+        FROM product p
+        LEFT JOIN category c ON p.category_id = c.category_id
+        WHERE p.product_id = ?
+        """;
+
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return new Product(
-                        rs.getInt("id"),
-                        rs.getString("title"),
-                        rs.getString("description"),
-                        rs.getString("image_url"),
-                        //rs.getTimestamp("date_added").toLocalDateTime(),
-                        rs.getDouble("price"),
-                        rs.getInt("stock"),
-                        rs.getInt("category_id"),
-                        rs.getString("category_name"),
-                        rs.getString("status")
-                );
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Product(
+                            // note the corrected column names:
+                            rs.getInt("product_id"),
+                            rs.getString("title"),
+                            rs.getString("description"),
+                            rs.getString("image_url"),
+                            rs.getDouble("price"),
+                            rs.getInt("stock"),
+                            rs.getInt("category_id"),
+                            rs.getString("category_name"),
+                            rs.getString("status")
+                    );
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
