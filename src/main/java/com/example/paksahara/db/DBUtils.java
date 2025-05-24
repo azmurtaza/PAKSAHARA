@@ -4,25 +4,26 @@ import com.example.paksahara.model.User;
 import com.example.paksahara.model.Product;
 import com.example.paksahara.model.Order;
 import com.example.paksahara.model.LoginResult;
-
+import java.util.Date;
+import java.util.Map;
+import com.example.paksahara.model.Customer;
+import com.example.paksahara.model.Order;
+import com.example.paksahara.model.Product;
+import java.util.List;
 import java.awt.*;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.*;
-import java.sql.*;
 import com.example.paksahara.session.SessionManager;
-import java.util.function.Consumer;
 import com.example.paksahara.controller.CartContent;
 
-import com.example.paksahara.model.User;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 public class DBUtils {
@@ -186,6 +187,153 @@ public class DBUtils {
             try { conn.setAutoCommit(true); } catch (SQLException ignore) {}
         }
     }
+
+    public static void removeFromCart(int userId, int productId) throws SQLException {
+        String sql = "DELETE FROM cart WHERE user_id = ? AND product_id = ?";
+        try (var conn = getConnection();
+             var ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.setInt(2, productId);
+            ps.executeUpdate();
+        }
+    }
+    /** Fetches the unit price of a product for order‐total calculations */
+    public static double fetchProductPrice(int productId) throws SQLException {
+        String sql = "SELECT price FROM product WHERE product_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, productId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getDouble("price");
+                } else {
+                    throw new SQLException("Product not found with ID " + productId);
+                }
+            }
+        }
+    }
+
+    public static void createOrder(int userId,
+                                   int productId,
+                                   int quantity,
+                                   String method,
+                                   String cardNum,
+                                   String cvc) throws SQLException {
+        String insertOrderSql =
+                "INSERT INTO orders (user_id, order_date, total_amount, status) " +
+                        "VALUES (?, NOW(), ?, 'Pending')";
+        String insertPaymentSql =
+                "INSERT INTO payments (order_id, method, card_number, cvc) VALUES (?, ?, ?, ?)";
+        // Now include unitPrice in the line‐items insert:
+        String insertItemSql =
+                "INSERT INTO order_items (order_id, product_id, quantity, unit_price) VALUES (?, ?, ?, ?)";
+
+        try (Connection conn = getConnection()) {
+            conn.setAutoCommit(false);
+
+            // 1) Insert into orders and grab the generated order_id
+            int orderId;
+            double unitPrice = fetchProductPrice(productId); // get the product’s unit price
+            double totalAmt  = unitPrice * quantity;
+
+            try (PreparedStatement ps = conn.prepareStatement(
+                    insertOrderSql, Statement.RETURN_GENERATED_KEYS)) {
+                ps.setInt(1, userId);
+                ps.setDouble(2, totalAmt);
+                ps.executeUpdate();
+
+                try (ResultSet keys = ps.getGeneratedKeys()) {
+                    if (keys.next()) {
+                        orderId = keys.getInt(1);
+                    } else {
+                        throw new SQLException("Creating order failed, no ID obtained.");
+                    }
+                }
+            }
+
+            // 2) Insert into payments
+            try (PreparedStatement ps = conn.prepareStatement(insertPaymentSql)) {
+                ps.setInt(1, orderId);
+                ps.setString(2, method);
+                ps.setString(3, cardNum);
+                ps.setString(4, cvc);
+                ps.executeUpdate();
+            }
+
+            // 3) Insert into order_items, now including unitPrice
+            try (PreparedStatement ps = conn.prepareStatement(insertItemSql)) {
+                ps.setInt(1, orderId);
+                ps.setInt(2, productId);
+                ps.setInt(3, quantity);
+                ps.setDouble(4, unitPrice);
+                ps.executeUpdate();
+            }
+
+            conn.commit();
+        } catch (SQLException ex) {
+            // rollback if you want, then rethrow
+            throw ex;
+        }
+    }
+
+    public static void updateUserAddress(int userId, String address) throws SQLException {
+        String sql = "UPDATE users SET address = ? WHERE user_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, address);
+            ps.setInt(2, userId);
+            ps.executeUpdate();
+        }
+    }
+
+    public static List<Order> fetchAllOrders() throws SQLException {
+        String sql = """
+        SELECT o.order_id,
+               o.user_id,
+               o.order_date,
+               o.total_amount,
+               o.status,
+               p.method
+          FROM orders o
+          JOIN payments p ON o.order_id = p.order_id
+         ORDER BY o.order_date DESC
+    """;
+        List<Order> orders = new ArrayList<>();
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                int orderId   = rs.getInt("order_id");
+                // Option A: no customer object yet
+                Customer cust = null;
+                // Option B: if you want the actual Customer:
+                // Customer cust = (Customer) DBUtils.fetchUserById(rs.getInt("user_id"));
+
+                // Convert SQL Timestamp to java.util.Date
+                Date orderDate = new Date(rs.getTimestamp("order_date").getTime());
+
+                double total   = rs.getDouble("total_amount");
+                String status  = rs.getString("status");
+
+                // Reuse your existing helper to load the map of products → quantities
+                Map<Product,Integer> items = DBUtils.fetchOrderItems(orderId);
+
+                Order ord = new Order(
+                        orderId,    // orderID
+                        cust,       // Customer object (or null)
+                        orderDate,  // java.util.Date
+                        total,      // double
+                        status,     // String
+                        items       // Map<Product,Integer>
+                );
+
+                orders.add(ord);
+            }
+
+        }
+        return orders;
+    }
+
 
 
 
@@ -558,13 +706,14 @@ public class DBUtils {
 
 
     public static User fetchUserById(int userId) {
-        String sql = "SELECT first_name, last_name, email, role, image_url FROM users WHERE user_id = ?";
+        String sql = "SELECT first_name, last_name, email, role, image_url, address FROM users WHERE user_id = ?";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return new User(
+                    // 1) Construct the User object
+                    User u = new User(
                             userId,
                             rs.getString("first_name"),
                             rs.getString("last_name"),
@@ -572,6 +721,10 @@ public class DBUtils {
                             rs.getString("role"),
                             rs.getString("image_url")
                     );
+                    // 2) Set the address
+                    u.setAddress(rs.getString("address"));
+                    // 3) Return the fully populated User
+                    return u;
                 }
             }
         } catch (SQLException e) {
@@ -579,6 +732,7 @@ public class DBUtils {
         }
         return null;
     }
+
 
 
     public static void updateUserImage(int userId, String imageUrl) throws SQLException {

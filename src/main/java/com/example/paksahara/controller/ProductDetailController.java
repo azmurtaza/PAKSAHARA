@@ -87,11 +87,8 @@ public class ProductDetailController implements Initializable {
         }
 
         int qty = quantitySpinner.getValue();
-        try {
-            CartContent.addToCart(userId, productId, qty);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+            DBUtils.addToCart(userId, productId, qty);
+
 
         Alert confirmation = new Alert(Alert.AlertType.INFORMATION,
                 qty + " x " + product.getTitle() + " added to cart.");

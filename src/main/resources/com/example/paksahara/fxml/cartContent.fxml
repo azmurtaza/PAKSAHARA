@@ -25,6 +25,17 @@
             <TableColumn fx:id="colQuantity" text="Qty" prefWidth="60"/>
             <TableColumn fx:id="colUnitPrice" text="Unit Price" prefWidth="100"/>
             <TableColumn fx:id="colTotalPrice" text="Total Price" prefWidth="100"/>
+            <TableColumn fx:id="checkoutCol" text="Checkout"/>
+            <TableColumn fx:id="removeCol"   text="Remove"/>
+            <!-- right after your last <TableColumn ...> -->
+            <TableColumn fx:id="colCheckout"
+                         text="Checkout"
+                         prefWidth="100"/>
+            <TableColumn fx:id="colRemove"
+                         text="Remove"
+                         prefWidth="100"/>
+
+
         </columns>
     </TableView>
 </VBox>

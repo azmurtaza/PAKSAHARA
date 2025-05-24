@@ -24,7 +24,7 @@ import com.example.paksahara.session.SessionManager;
 import com.example.paksahara.db.DBUtils;
 import com.example.paksahara.model.User;
 import java.io.IOException;
-import com.example.paksahara.db.DBUtils;
+import com.example.paksahara.controller.CartContent;
 import com.example.paksahara.model.Product;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -199,11 +199,7 @@ public class HomeContent implements Initializable {
         Button btnCart   = new Button("Add to Cart");
         btnCart.setDisable(stock<=0);
         btnCart.setOnAction(e -> {
-            try {
-                CartContent.addToCart(currentUserId, id);
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
+                DBUtils.addToCart(currentUserId, id);
             showAlert("Added to Cart", title + " has been added.");
         });
 
@@ -237,7 +233,7 @@ public class HomeContent implements Initializable {
 
     private void addToCart(Product p) {
         try {
-            CartContent.addToCart(currentUserId, p.getId());
+            DBUtils.addToCart(currentUserId, p.getId());
             showAlert("Success", p.getTitle() + " has been added to your cart.");
         } catch (Exception e) {
             e.printStackTrace();

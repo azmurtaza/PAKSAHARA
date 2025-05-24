@@ -23,7 +23,8 @@
 
     <Label text="My Profile"
            style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
-
+    <Label text="Address:" style="-fx-font-weight:bold;"/>
+    <Label fx:id="lblAddress" style="-fx-text-fill:#555;"/>
     <!-- Profile pic + buttons -->
     <VBox alignment="CENTER" spacing="10">
         <ImageView fx:id="profileImageView"
@@ -51,6 +52,7 @@
     <!-- Hidden edit controls -->
     <HBox spacing="10" alignment="CENTER">
         <TextField fx:id="tfName" promptText="Enter new name" visible="false"/>
+        <TextField fx:id="tfAddress" promptText="Enter address" visible="false"/>
         <Button fx:id="btnSave"   text="Save"   onAction="#onSave"   visible="false"/>
         <Button fx:id="btnCancel" text="Cancel" onAction="#onCancel" visible="false"/>
     </HBox>

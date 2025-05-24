@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.paksahara.controller.CartContent"
+      spacing="10">
+
+    <padding>
+        <Insets top="15" right="15" bottom="15" left="15"/>
+    </padding>
+
+    <Button fx:id="btnRefresh"
+            text="⟳ Refresh Cart"
+            maxWidth="150"
+            onAction="#loadCartItems"/>
+
+    <TableView fx:id="cartTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colProductName" text="Product" prefWidth="200"/>
+            <TableColumn fx:id="colQuantity" text="Qty" prefWidth="60"/>
+            <TableColumn fx:id="colUnitPrice" text="Unit Price" prefWidth="100"/>
+            <TableColumn fx:id="colTotalPrice" text="Total Price" prefWidth="100"/>
+            <!-- right after your last <TableColumn ...> -->
+            <TableColumn fx:id="colCheckout"
+                         text="Checkout"
+                         prefWidth="100"/>
+            <TableColumn fx:id="colRemove"
+                         text="Remove"
+                         prefWidth="100"/>
+
+        </columns>
+    </TableView>
+</VBox>

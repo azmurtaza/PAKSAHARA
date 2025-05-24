@@ -75,9 +75,28 @@ public class EndUserDashboard implements Initializable {
 
     @FXML
     private void handleCart() {
-        loadView("cartContent.fxml");
-        setActiveButton(cartButton);
+        try {
+            // 1. Load from /fxml/cartContent.fxml (not the root folder)
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/com/example/paksahara/fxml/cartContent.fxml")
+            );
+            Parent cartView = loader.load();
+
+            // 2. Tell the controller which user to load
+            CartContent cartCtrl = loader.getController();
+            int userId = SessionManager.getCurrentUserId();
+            cartCtrl.setCurrentUserId(userId);
+
+            // 3. Show it
+            contentArea.getChildren().setAll(cartView);
+            setActiveButton(cartButton);
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            showError("Could not load cart: " + ex.getMessage());
+        }
     }
+
 
     @FXML
     private void handleOrders() {

@@ -13,6 +13,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.fxml.FXMLLoader;
 import java.net.URL;
+import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -63,11 +64,25 @@ public class TransactionReportController implements Initializable {
         });
 
         ordersTable.setItems(orders);
-
-        loadUserOrders();
+        loadOrders();
     }
 
-    private void loadUserOrders() {
+    private void loadOrders() {
+        orders.clear();
+        String role = SessionManager.getCurrentUserRole();         // getRole() returns "ADMIN" or "END_USER"
+        if ("ADMIN".equalsIgnoreCase(role)) {
+            try {
+                orders.addAll(DBUtils.fetchAllOrders());          // YOUR helper to fetch every order
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            int userId = SessionManager.getCurrentUserId();
+            orders.addAll(DBUtils.fetchOrdersForUser(userId)); // existing user-only loader :contentReference[oaicite:0]{index=0}
+        }
+    }
+
+    private void loadAllOrders() {
         int userId = SessionManager.getCurrentUserId();
         orders.clear();
         orders.addAll(DBUtils.fetchOrdersForUser(userId));
@@ -99,4 +114,6 @@ public class TransactionReportController implements Initializable {
         dlg.getDialogPane().setContent(box);
         dlg.showAndWait();
     }
+
+
 }

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.paksahara.controller.TransactionReportController"
+      spacing="20" alignment="TOP_CENTER"
+      style="-fx-background-color: #f0f2f5;"
+      prefWidth="900">
+
+    <padding>
+        <Insets top="30" right="20" bottom="30" left="20"/>
+    </padding>
+
+    <Label text="My Purchases"
+           style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;"/>
+
+    <TableView fx:id="ordersTable" prefWidth="850" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colOrderId" text="Order ID"    prefWidth="100"/>
+            <TableColumn fx:id="colDate"    text="Date"        prefWidth="200"/>
+            <TableColumn fx:id="colTotal"   text="Total (₨)"  prefWidth="120"/>
+            <TableColumn fx:id="colStatus"  text="Status"      prefWidth="120"/>
+            <TableColumn fx:id="colAction"  text="Details"     prefWidth="120"/>
+        </columns>
+    </TableView>
+</VBox>

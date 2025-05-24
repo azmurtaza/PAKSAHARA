@@ -15,14 +15,28 @@
             <Insets top="10" right="10" bottom="10" left="10"/>
         </padding>
 
-        <ImageView fx:id="cardImage" fitWidth="180" fitHeight="120" preserveRatio="true"/>
-        <Label fx:id="cardTitle" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
-        <Label fx:id="cardCategory" style="-fx-text-fill: #555;"/>
-        <Label fx:id="cardPrice" style="-fx-text-fill: #27ae60; -fx-font-size: 14px;"/>
-        <Label fx:id="cardStatus" style="-fx-text-fill: #888;"/>
+        <ImageView fx:id="cardImage"
+                   fitWidth="180" fitHeight="120"
+                   preserveRatio="true"/>
+
+        <Label fx:id="cardTitle"
+               style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+
+        <Label fx:id="cardCategory"
+               style="-fx-text-fill: #555;"/>
+
+        <Label fx:id="cardPrice"
+               style="-fx-text-fill: #27ae60; -fx-font-size: 14px;"/>
+
+        <Label fx:id="cardStatus"
+               style="-fx-text-fill: #888;"/>
+
+        <!-- THIS SPINNER MUST BE HERE for the admin method to see it: -->
+        <Spinner fx:id="quantitySpinner"
+                 prefWidth="80"
+                 visible="false"/>
 
         <Button fx:id="actionBtn"
-                text="Delete"
                 style="-fx-background-radius: 5; -fx-padding: 5 10;"
                 prefWidth="120"/>
     </VBox>

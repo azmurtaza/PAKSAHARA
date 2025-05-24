@@ -151,4 +151,19 @@ public class AdminDashboard implements Initializable {
     private void showError(String msg) {
         new Alert(Alert.AlertType.ERROR, msg).showAndWait();
     }
+
+    @FXML private void loadTransactions() {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/com/example/paksahara/fxml/transaction_report.fxml")
+            );
+            Parent pane = loader.load();
+            contentArea.getChildren().setAll(pane);
+            setActiveButton(transactionsButton);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            showError("Could not load transactions: " + ex.getMessage());
+        }
+    }
+
 }

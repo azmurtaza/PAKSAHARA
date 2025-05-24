@@ -67,4 +67,12 @@ public class User {
 
     /** Convenience: full name */
     public String getName() { return firstName + " " + lastName; }
+
+    // in User.java
+    private String address;
+// in your constructors, you can leave it null or add overloads later
+
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
+
 }

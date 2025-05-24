@@ -1,13 +1,7 @@
 package com.example.paksahara.session;
-
+import com.example.paksahara.model.User;
 public class SessionManager {
-    private static int currentUserId;
-    private static String currentUserRole;
 
-    public static void setCurrentUser(int userId, String role) {
-        currentUserId = userId;
-        currentUserRole = role;
-    }
 
     private static Integer currentModeratorId;
 
@@ -15,10 +9,17 @@ public class SessionManager {
         currentUserId = userId;
         currentModeratorId = moderatorId;
     }
+    private static int currentUserId;
+    private static String currentUserRole;
 
-    public static int getCurrentUserId() { return currentUserId; }
-    public static Integer getCurrentModeratorId() { return currentModeratorId; }
+    public static void setCurrentUser(int userId, String role) {
+        currentUserId   = userId;
+        currentUserRole = role;
+    }
 
+    public static int getCurrentUserId() {
+        return currentUserId;
+    }
 
     public static String getCurrentUserRole() {
         return currentUserRole;
