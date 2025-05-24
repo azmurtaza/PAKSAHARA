@@ -706,25 +706,22 @@ public class DBUtils {
 
 
     public static User fetchUserById(int userId) {
-        String sql = "SELECT first_name, last_name, email, role, image_url, address FROM users WHERE user_id = ?";
+        String sql = "SELECT user_id, first_name, last_name, email, role, image_url, address FROM users WHERE user_id = ?";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    // 1) Construct the User object
-                    User u = new User(
-                            userId,
+                    User user = new User(
+                            rs.getInt("user_id"),
                             rs.getString("first_name"),
                             rs.getString("last_name"),
                             rs.getString("email"),
                             rs.getString("role"),
                             rs.getString("image_url")
                     );
-                    // 2) Set the address
-                    u.setAddress(rs.getString("address"));
-                    // 3) Return the fully populated User
-                    return u;
+                    user.setAddress(rs.getString("address")); // NEW
+                    return user;
                 }
             }
         } catch (SQLException e) {
@@ -732,6 +729,8 @@ public class DBUtils {
         }
         return null;
     }
+
+
 
 
 
@@ -744,6 +743,8 @@ public class DBUtils {
             ps.executeUpdate();
         }
     }
+
+
 
     public static void updateUserName(int userId, String first, String last) throws SQLException {
         String sql = "UPDATE users SET first_name = ?, last_name = ? WHERE user_id = ?";

@@ -3,6 +3,7 @@ package com.example.paksahara.controller;
 import com.example.paksahara.db.DBUtils;
 import com.example.paksahara.model.User;
 import com.example.paksahara.session.SessionManager;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -12,14 +13,15 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
-import javafx.stage.Window;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
-
 public class ProfileController implements Initializable {
     @FXML private ImageView profileImageView;
     @FXML private Label lblName, lblEmail, lblRole;
@@ -28,37 +30,21 @@ public class ProfileController implements Initializable {
     @FXML private Label lblAddress;
     @FXML private TextField tfAddress;
 
+    private String imagePath;
 
     private int currentUserId;
     private User currentUser;
+    private boolean addressField;
 
-    @Override
     public void initialize(URL location, ResourceBundle resources) {
         // hide edit controls
         tfName.setVisible(false);
         btnSave.setVisible(false);
         btnCancel.setVisible(false);
 
-        // load user
         currentUserId = SessionManager.getCurrentUserId();
         loadUserData();
-
-        // NOW it's safe to ask for the URL:
-        String imagePath = currentUser.getImageUrl();
-        if (imagePath != null && !imagePath.isEmpty()) {
-            try {
-                profileImageView.setImage(
-                        new Image(new File(imagePath).toURI().toString())
-                );
-            } catch (Exception e) {
-                profileImageView.setImage(new Image("/icon.png"));
-            }
-        } else {
-            profileImageView.setImage(new Image("/icon.png"));
-        }
     }
-
-
 
     private void loadUserData() {
         currentUser = DBUtils.fetchUserById(currentUserId);
@@ -66,54 +52,69 @@ public class ProfileController implements Initializable {
             showError("User not found!");
             return;
         }
-        // display user info
+
+        // --- Text fields ---
         lblName.setText(currentUser.getFirstName() + " " + currentUser.getLastName());
         lblEmail.setText(currentUser.getEmail());
         lblRole.setText(currentUser.getRole());
-        lblAddress.setText(
-                currentUser.getAddress() != null
-                        ? currentUser.getAddress()
-                        : "(no address set)"
-        );
+        lblAddress.setText(currentUser.getAddress() != null ? currentUser.getAddress() : "");
 
-
-        // load profile image
-        String imagePath = currentUser.getImageUrl();
-        InputStream is = null;
-        if (imagePath != null && imagePath.startsWith("/")) {
-            // resource path
-            is = getClass().getResourceAsStream(imagePath);
-        }
-        if (is == null) {
-            // fallback default
-            is = getClass().getResourceAsStream("/icon.png");
-        }
-        if (is != null) {
-            profileImageView.setImage(new Image(is,150,150,true,true));
+        // --- Profile image ---
+        String imgPath = currentUser.getImageUrl();
+        if (imgPath != null && !imgPath.isBlank()) {
+            File imgFile = new File(imgPath);
+            if (imgFile.exists()) {
+                profileImageView.setImage(
+                        new Image(imgFile.toURI().toString(), 150, 150, true, true)
+                );
+            } else {
+                // In case someone manually messed with the DB
+                profileImageView.setImage(new Image("/icon.png"));
+            }
+        } else {
+            profileImageView.setImage(new Image("/icon.png"));
         }
     }
 
+    private String saveProfileImage(File selectedFile) throws IOException {
+        File uploadsDir = new File("uploads");
+        if (!uploadsDir.exists()) uploadsDir.mkdirs();
+
+        String fileName = System.currentTimeMillis() + "_" + selectedFile.getName();
+        File dest = new File(uploadsDir, fileName);
+        Files.copy(selectedFile.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+        // Store relative path, e.g. "uploads/16824234234_photo.png"
+        return "uploads/" + fileName;
+    }
 
     @FXML
-    private void handleChangePicture() {
+    private void handleChangePicture(ActionEvent event) {
         FileChooser chooser = new FileChooser();
-        chooser.setTitle("Select Profile Picture");
+        chooser.setTitle("Choose Profile Picture");
         chooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Images", "*.png","*.jpg","*.jpeg")
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif")
         );
-        Window win = profileImageView.getScene().getWindow();
-        var file = chooser.showOpenDialog(win);
-        if (file != null) {
-            String uri = file.toURI().toString();
-            profileImageView.setImage(new Image(uri,150,150,true,true));
-            try {
-                DBUtils.updateUserImage(currentUserId, uri);
-                currentUser.setImageUrl(uri);
-            } catch (Exception ex) {
-                showError("Could not save image: " + ex.getMessage());
-            }
+
+        File selected = chooser.showOpenDialog(profileImageView.getScene().getWindow());
+        if (selected == null) return;
+
+        try {
+            // 1) Copy into our uploads folder
+            String relativePath = saveProfileImage(selected);
+
+            // 2) Persist that relative path
+            DBUtils.updateUserImage(currentUserId, relativePath);
+            currentUser.setImageUrl(relativePath);
+
+            // 3) Display it
+            String uri = new File(relativePath).toURI().toString();
+            profileImageView.setImage(new Image(uri, 150, 150, true, true));
+        } catch (Exception e) {
+            showError("Could not update image: " + e.getMessage());
         }
     }
+
 
     @FXML
     private void onEdit() {
@@ -142,24 +143,34 @@ public class ProfileController implements Initializable {
 
     @FXML
     private void onSave() {
-        try {
-            String name = tfName.getText().trim();
-            String address = tfAddress.getText() == null ? "" : tfAddress.getText().trim();
-
-            DBUtils.updateUserName(currentUserId, name);  // your original logic
-            DBUtils.updateUserAddress(currentUserId, address);  // ensure this is implemented
-
-            currentUser.setFirstName(name);
-            currentUser.setAddress(address);
-
-            lblName.setText(name);
-            lblAddress.setText(address);
-            resetEditMode();
-        } catch (Exception e) {
-            e.printStackTrace();
-            showError("Could not save profile: " + e.getMessage());
+        // Name update (unchanged)
+        String fullName = tfName.getText().trim();
+        if (!fullName.isEmpty()) {
+            String[] parts = fullName.split(" ", 2);
+            try {
+                DBUtils.updateUserName(currentUserId, parts[0], parts.length>1 ? parts[1] : "");
+                currentUser.setFirstName(parts[0]);
+                currentUser.setLastName(parts.length>1 ? parts[1] : "");
+                lblName.setText(fullName);
+            } catch (Exception e) {
+                showError("Could not save name: " + e.getMessage());
+            }
         }
+
+        // *** Address update ***
+        String newAddr = tfAddress.getText().trim();
+        try {
+            DBUtils.updateUserAddress(currentUserId, newAddr);
+            currentUser.setAddress(newAddr);
+            lblAddress.setText(newAddr);
+        } catch (Exception e) {
+            showError("Could not save address: " + e.getMessage());
+        }
+
+        resetEditMode();
     }
+
+
 
 
     @FXML
